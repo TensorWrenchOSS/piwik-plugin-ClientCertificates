@@ -1,0 +1,12 @@
+{
+    "ClientCertificates": {
+        "UserDN": "User DN",
+        "FirstName": "First Name",
+        "LastName": "Last Name",
+        "Email": "Email",
+        "Agency": "Agency",
+        "Agencies": "Agencies",
+        "UserInformation": "User Information",
+        "UID": "UID"
+    }
+}

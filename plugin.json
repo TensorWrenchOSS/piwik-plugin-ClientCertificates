@@ -1,0 +1,16 @@
+{
+    "name": "ClientCertificates",
+    "version": "0.1.0",
+    "description": "This plugin will enable user identification through client certificates",
+    "theme": false,
+    "require": {
+        "piwik": ">=2.8.0"
+    },
+    "authors": [
+        {
+            "name": "Piwik",
+            "email": "",
+            "homepage": ""
+        }
+    ]
+}
