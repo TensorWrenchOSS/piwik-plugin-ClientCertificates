@@ -2,17 +2,12 @@
 
 ## Description
 
-Add your plugin description here.
+This plugin will add the following features to a piwik installation:
 
-## FAQ
+ * User identification based on client certificate
+ * User authorization against specified service
+ * Populate visits with metadata from authorization service
+ * View reports related to agency and user name
 
-__My question?__
-My answer
 
-## Changelog
-
-Here goes the changelog text.
-
-## Support
-
-Please direct any feedback to ...
+ClientCertficates plugin will also require deployment of the ozone-enhancements branch of piwik to be able to tap into custom events needed for proper operation.
