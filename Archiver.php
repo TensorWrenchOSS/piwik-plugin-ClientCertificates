@@ -3,6 +3,7 @@
 namespace Piwik\Plugins\ClientCertificates;
 
 use \Piwik\Metrics;
+use Piwik\DataTable;
 
 class Archiver extends \Piwik\Plugin\Archiver {
 	public function aggregateDayReport() {
@@ -49,8 +50,11 @@ class Archiver extends \Piwik\Plugin\Archiver {
      */
     public function aggregateMultipleReports() {
 		\Piwik\Log::info("Aggregate multi-day report for client certificates");
+
+		$columnsAggregationOperation = array('log_visit.user_id' => 'skip',ClientCertificates::DATA_FIRST_NAME => 'max', ClientCertificates::DATA_LAST_NAME => 'max', ClientCertificates::DATA_AGENCY => 'max');
+    	
     	$archiveProcessor = $this->getProcessor();
     	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetAgencyInformation', 500);
-    	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetUserInformation', 500);
+    	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetUserInformation', 500, null, null, $columnsAggregationOperation);
     }
 }
