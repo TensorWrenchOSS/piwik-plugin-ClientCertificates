@@ -2,8 +2,9 @@
 
 namespace Piwik\Plugins\ClientCertificates;
 
-use \Piwik\Metrics;
+use Piwik\Metrics;
 use Piwik\DataTable;
+use Piwik\DataArray;
 
 class Archiver extends \Piwik\Plugin\Archiver {
 	public function aggregateDayReport() {
@@ -38,8 +39,13 @@ class Archiver extends \Piwik\Plugin\Archiver {
 		while ($row = $query->fetch()) {
 			array_push($dataRows, $row);
         }
-		$dataArray = new \Piwik\DataArray($dataRows);
+		$dataArray = new DataArray($dataRows);
 		$dataTable = $dataArray->asDataTable();
+
+		foreach ($dataTable->getRows() as $row) {
+			$label = $row->getColumn('log_visit.user_id');
+			$row->setColumn('label',$label);
+		}
 
 		$archiveProcessor = $this->getProcessor();
 		$archiveProcessor->insertBlobRecord('ClientCertificates_GetUserInformation', $dataTable->getSerialized(500));
@@ -49,9 +55,7 @@ class Archiver extends \Piwik\Plugin\Archiver {
      * Period archiving: simply sums up daily archives
      */
     public function aggregateMultipleReports() {
-		\Piwik\Log::info("Aggregate multi-day report for client certificates");
-
-		$columnsAggregationOperation = array('log_visit.user_id' => 'skip',ClientCertificates::DATA_FIRST_NAME => 'max', ClientCertificates::DATA_LAST_NAME => 'max', ClientCertificates::DATA_AGENCY => 'max');
+		$columnsAggregationOperation = array('log_visit.user_id' => 'max',ClientCertificates::DATA_FIRST_NAME => 'max', ClientCertificates::DATA_LAST_NAME => 'max', ClientCertificates::DATA_AGENCY => 'max');
     	
     	$archiveProcessor = $this->getProcessor();
     	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetAgencyInformation', 500);

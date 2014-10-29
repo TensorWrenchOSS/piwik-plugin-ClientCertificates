@@ -10,7 +10,9 @@ namespace Piwik\Plugins\ClientCertificates;
 
 use Piwik\Archive;
 use Piwik\DataTable;
+use Piwik\Segment;
 use Piwik\DataTable\Row;
+use Piwik\Plugins\VisitsSummary\API as VisitsSummaryAPI;
 
 /**
  * API for plugin ClientCertificates
@@ -32,63 +34,30 @@ class API extends \Piwik\Plugin\API
     {
         $dataTable = Archive::getDataTableFromArchive('ClientCertificates_GetAgencyInformation', $idSite, $period, $date, $segment, false);
 
-        $dataTable->queueFilter( function(DataTable $table) {
+        $dataTable->queueFilter( function(DataTable $table) use ($idSite, $period, $date) {
             // Set new summed unique users column into daily unique users column so they can be displayed in the same column
             // when viewing a date range and not just a single day.
+            $visitsSummary = VisitsSummaryAPI::getInstance();
+
             foreach ($table->getRows() as $visitRow) {
-                if($visitRow->hasColumn(\Piwik\Metrics::INDEX_SUM_DAILY_NB_USERS)) {
-                    $visitRow->setColumn(\Piwik\Metrics::INDEX_NB_USERS, $visitRow->getColumn(\Piwik\Metrics::INDEX_SUM_DAILY_NB_USERS));
-                }
+                $agency = $visitRow->getColumn('label');
+                $newSegment = new Segment('agency=='.$agency, $idSite);
+
+                $data = $visitsSummary->getUniqueVisitors($idSite, $period, $date, $newSegment);
+                $data->queueFilter( function(DataTable $uniqueTable) use ($visitRow, $agency) {
+                    $uniqueVisitors = $uniqueTable->getRows()[0]->getColumn('nb_uniq_visitors');
+
+                    $visitRow->setColumn(\Piwik\Metrics::INDEX_NB_USERS, $uniqueVisitors);
+                });
+                $data->applyQueuedFilters();
             }
         });
         
         $dataTable->queueFilter('ReplaceColumnNames');
         $dataTable->queueFilter('ReplaceSummaryRowLabel');
 
+
         return $dataTable;
-
-        // throw new \Exception();
-        // $data = \Piwik\Plugins\Live\API::getInstance()->getLastVisitsDetails(
-        //     $idSite,
-        //     $period,
-        //     $date,
-        //     $segment,
-        //     $numLastVisitorsToFetch = 100,
-        //     $minTimestamp = false,
-        //     $flat = false,
-        //     $doNotFetchActions = true
-        // );
-        // $data->applyQueuedFilters();
-
-        // $result = $data->getEmptyClone($keepFilters = false); // we could create a new instance by using new DataTable(),
-        //                                                       // but that wouldn't copy DataTable metadata, which can be
-        //                                                       // useful.
-
-        // $users = array();
-        // foreach ($data->getRows() as $visitRow) {
-        //     $agency = $visitRow->getColumn('agency');
-        //     $userid = $visitRow->getColumn('userId');
-
-        //     // try and get the row in the result DataTable for the browser used in this visit
-        //     $resultRowForAgency = $result->getRowFromLabel($agency);
-
-        //     // if there is no row for this browser, create it
-        //     if ($resultRowForAgency === false) {
-        //         $result->addRowFromSimpleArray(array(
-        //             'label' => $agency,
-        //             'nb_visits' => 1,
-        //             'ClientCertificates_uniqueVisitors' => 1
-        //         ));
-        //         array_push($users, $userid);
-        //     } else { // if there is a row, increment the visit count
-        //         if(!in_array($userid, $users)) {
-        //             array_push($users, $userid);
-        //             $resultRowForAgency->setColumn('ClientCertificates_uniqueVisitors', $resultRowForAgency->getColumn('ClientCertificates_uniqueVisitors') + 1);
-        //         } 
-        //         $resultRowForAgency->setColumn('nb_visits', $resultRowForAgency->getColumn('nb_visits') + 1);
-        //     }
-        // }
-       
     }
 
     /**
@@ -118,46 +87,6 @@ class API extends \Piwik\Plugin\API
         });
 
         return $dataTable;
-
-        // $data = \Piwik\Plugins\Live\API::getInstance()->getLastVisitsDetails(
-        //     $idSite,
-        //     $period,
-        //     $date,
-        //     $segment,
-        //     $numLastVisitorsToFetch = 100,
-        //     $minTimestamp = false,
-        //     $flat = false,
-        //     $doNotFetchActions = true
-        // );
-        // $data->applyQueuedFilters();
-
-        // $result = $data->getEmptyClone($keepFilters = false); // we could create a new instance by using new DataTable(),
-        //                                                       // but that wouldn't copy DataTable metadata, which can be
-        //                                                       // useful.
-
-        // foreach ($data->getRows() as $visitRow) {
-        //     $userid = $visitRow->getColumn('userId');
-        //     $agency = $visitRow->getColumn('agency');
-        //     $firstname = $visitRow->getColumn('first_name');
-        //     $lastname = $visitRow->getColumn('last_name');
-
-        //     // try and get the row in the result DataTable for the browser used in this visit
-        //     $resultRowForUser = $result->getRowFromLabel($userid);
-
-        //     // if there is no row for this browser, create it
-        //     if ($resultRowForUser === false) {
-        //         $result->addRowFromSimpleArray(array(
-        //             'label' => $userid,
-        //             'ClientCertificates_name' => "$firstname $lastname",
-        //             'ClientCertificates_agency' => $agency,
-        //             'nb_visits' => 1
-        //         ));
-        //     } else { // if there is a row, increment the visit count
-        //         $resultRowForUser->setColumn('nb_visits', $resultRowForUser->getColumn('nb_visits') + 1);
-        //     }
-        // }
-
-        // return $result;
     }
 
 }
