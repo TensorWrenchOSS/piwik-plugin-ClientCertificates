@@ -2,20 +2,29 @@
 
 namespace Piwik\Plugins\ClientCertificates;
 
+use Piwik\Settings\SystemSetting;
+
 class Settings extends \Piwik\Plugin\Settings
 {
     protected function init()
     {
-        $this->govportServer = $this->createGovportServerSetting();
+        $this->govportServer = $this->createTextSetting('govportServer','Govport Server', 'Enter the Govport server endpoint to use to authorize users', 'http://localhost:3000/dn');
+        $this->serverCert = $this->createTextSetting('serverCert', 'Server Certificate','Enter path to server certificate','/etc/ssl/adv/localhost.pem');
+        $this->serverKey = $this->createTextSetting('serverKey','Server Key','Enter path to server key file','/etc/ssl/adv/localhost.np.key');
+        $this->serverCA = $this->createTextSetting('serverCA', 'Server Certificate Authority','Enter path to server certificate authority file','/etc/ssl/adv/rootCA.pem');
         
         $this->addSetting($this->govportServer);
+        $this->addSetting($this->serverCert);
+        $this->addSetting($this->serverKey);
+        $this->addSetting($this->serverCA);
     }
 
-    private function createGovportServerSetting() {
-	    $setting = new \Piwik\Settings\SystemSetting('govportServer', 'Govport Server');
+    private function createTextSetting($id, $name, $description, $default) {
+    	$setting = new SystemSetting($id, $name);
 	    $setting->type = self::TYPE_STRING;
-	    $setting->description   = 'Enter the Govport server endpoint to use to authorize users';
-	    $setting->defaultValue = 'http://localhost:3000/dn';
+	    $setting->description   = $description;
+	    $setting->defaultValue = $default;
+
 	    return $setting;
-	}
+    }
 }

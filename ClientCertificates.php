@@ -82,7 +82,11 @@ class ClientCertificates extends \Piwik\Plugin {
 
     private function queryGovport($dn) {
         $settings = new Settings();
+
         $govportUrl = $settings->govportServer->getValue();
+        $serverCert = $settings->serverCert->getValue();
+        $serverKey = $settings->serverKey->getValue();
+        $serverCA = $settings->serverCA->getValue();
 
 		if(preg_match("/^\/c=/i",$dn)){
 			$dn = implode(",",array_reverse(explode("/",ltrim($dn,"/"))));
@@ -98,9 +102,9 @@ class ClientCertificates extends \Piwik\Plugin {
 		curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($curlSession, CURLOPT_SSLVERSION, 3);
-		curl_setopt($curlSession, CURLOPT_CAINFO, '/etc/ssl/adv/rootCA.pem');
-		curl_setopt($curlSession, CURLOPT_SSLCERT, '/etc/ssl/adv/localhost.pem');
-		curl_setopt($curlSession, CURLOPT_SSLKEY, '/etc/ssl/adv/localhost.np.key');
+		curl_setopt($curlSession, CURLOPT_CAINFO, $serverCA);
+		curl_setopt($curlSession, CURLOPT_SSLCERT, $serverCert);
+		curl_setopt($curlSession, CURLOPT_SSLKEY, $serverKey);
 		
 		$jsonData = json_decode(curl_exec($curlSession));
 		curl_close($curlSession);
