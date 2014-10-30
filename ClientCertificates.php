@@ -32,6 +32,13 @@ class ClientCertificates extends \Piwik\Plugin {
         $visitor['additionalData']['Name'] = $visitorDetails['first_name']. ' ' .$visitorDetails['last_name'];
         $visitor['additionalData']['Email'] = $visitorDetails['email'];
         $visitor['additionalData']['Agency'] = $visitorDetails['agency'];
+
+        // Populates auto complete for columns when selecting segments
+        $visitor['agency'] = $visitorDetails['agency'];
+        $visitor['email'] = $visitorDetails['email'];
+        $visitor['first_name'] = $visitorDetails['first_name'];
+        $visitor['last_name'] = $visitorDetails['last_name'];
+        $visitor['uid'] = $visitorDetails['uid'];
     }
 
     // Puts new visitor data from govport into database 
