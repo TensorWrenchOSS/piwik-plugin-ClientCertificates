@@ -34,14 +34,18 @@ class API extends \Piwik\Plugin\API
     {
         $dataTable = Archive::getDataTableFromArchive('ClientCertificates_GetAgencyInformation', $idSite, $period, $date, $segment, false);
 
-        $dataTable->queueFilter( function(DataTable $table) use ($idSite, $period, $date) {
+        $dataTable->queueFilter( function(DataTable $table) use ($idSite, $period, $date, $segment) {
             // Set new summed unique users column into daily unique users column so they can be displayed in the same column
             // when viewing a date range and not just a single day.
             $visitsSummary = VisitsSummaryAPI::getInstance();
 
             foreach ($table->getRows() as $visitRow) {
                 $agency = $visitRow->getColumn('label');
-                $newSegment = new Segment('agency=='.$agency, $idSite);
+                $segmentString = 'agency=='.$agency;
+                if($segment) {
+                    $segmentString .= ';'.$segment;
+                }
+                $newSegment = new Segment($segmentString, $idSite);
 
                 $data = $visitsSummary->getUniqueVisitors($idSite, $period, $date, $newSegment);
                 $data->queueFilter( function(DataTable $uniqueTable) use ($visitRow, $agency) {
