@@ -21,8 +21,28 @@ class ClientCertificates extends \Piwik\Plugin {
             'Tracker.newVisitorInformation' => 'newVisitorInformation',
             'Tracker.getVisitorId' => 'getVisitorId',
             'Tracker.getShouldMatchOneFieldOnly' => 'getShouldMatchOneFieldOnly',
-            'Live.getAllVisitorDetails' => 'getAllVisitorDetails'
+            'Live.getAllVisitorDetails' => 'getAllVisitorDetails',
+            'Dashboard.changeDefaultDashboardLayout' => 'changeDefaultDashboardLayout'
         );
+    }
+
+    public function changeDefaultDashboardLayout(&$defaultLayout) {
+        $defaultLayout = '[
+            [
+                {"uniqueId":"widgetVisitsSummarygetEvolutionGraphcolumnsArray","parameters":{"module":"VisitsSummary","action":"getEvolutionGraph","columns":"nb_visits","widget":1},"isHidden":false},
+                {"uniqueId":"widgetLivewidget","parameters":{"module":"Live","action":"widget","widget":1},"isHidden":false},
+                {"uniqueId":"widgetVisitorInterestgetNumberOfVisitsPerVisitDuration","parameters":{"module":"VisitorInterest","action":"getNumberOfVisitsPerVisitDuration","widget":1},"isHidden":false}
+            ],[
+                {"uniqueId":"widgetEventsgetCategorysecondaryDimensioneventAction","parameters":{"module":"Events","action":"getCategory","secondaryDimension":"eventAction","widget":1},"isHidden":false},
+                {"uniqueId":"widgetClientCertificatesgetAgencyInformation","parameters":{"module":"ClientCertificates","action":"getAgencyInformation","widget":1},"isHidden":false},
+                {"uniqueId":"widgetClientCertificatesgetUserInformation","parameters":{"module":"ClientCertificates","action":"getUserInformation","widget":1},"isHidden":false}
+            ],[
+                {"uniqueId":"widgetActionsgetSiteSearchKeywords","parameters":{"module":"Actions","action":"getSiteSearchKeywords","widget":1},"isHidden":false},
+                {"uniqueId":"widgetActionsgetSiteSearchNoResultKeywords","parameters":{"module":"Actions","action":"getSiteSearchNoResultKeywords","widget":1},"isHidden":false},
+                {"uniqueId":"widgetUserSettingsgetBrowser","parameters":{"module":"UserSettings","action":"getBrowser","widget":1},"isHidden":false},
+                {"uniqueId":"widgetVisitTimegetVisitInformationPerServerTime","parameters":{"module":"VisitTime","action":"getVisitInformationPerServerTime","widget":1},"isHidden":false}
+            ]
+        ]';
     }
 
     // Populates visitor card with additional data
