@@ -104,7 +104,13 @@ class ClientCertificates extends \Piwik\Plugin {
     }
 
     private function getUserDN() {
-    	return $_SERVER['SSL_CLIENT_S_DN'];
+        if($_SERVER['SSL_CLIENT_S_DN']) {
+            return $_SERVER['SSL_CLIENT_S_DN'];
+        } else if($_SERVER['HTTP_SSL_CLIENT_S_DN']) {
+            return $_SERVER['HTTP_SSL_CLIENT_S_DN'];
+        } else {
+            return null;
+        }
     }
 
     private function queryGovport($dn) {
