@@ -93,4 +93,46 @@ class API extends \Piwik\Plugin\API
         return $dataTable;
     }
 
+    public function getUserDN() {
+        if(array_key_exists('SSL_CLIENT_S_DN', $_SERVER)) {
+            return $_SERVER['SSL_CLIENT_S_DN'];
+        } else if(array_key_exists('HTTP_SSL_CLIENT_S_DN', $_SERVER)) {
+            return $_SERVER['HTTP_SSL_CLIENT_S_DN'];
+        } else {
+            return null;
+        }
+    }
+
+    public function queryGovport($dn) {
+        $settings = new \Piwik\Plugins\ClientCertificates\Settings();
+
+        $govportUrl = $settings->govportServer->getValue();
+        $serverCert = $settings->serverCert->getValue();
+        $serverKey = $settings->serverKey->getValue();
+        $serverCA = $settings->serverCA->getValue();
+
+        if(preg_match("/^\/c=/i",$dn)){
+            $dn = implode(",",array_reverse(explode("/",ltrim($dn,"/"))));
+        }
+        $url = "$govportUrl/$dn";
+        error_log($url);
+        $url =  str_replace (" " , "%20", $url);
+        $curlSession = curl_init();
+        curl_setopt($curlSession, CURLOPT_URL, $url);
+        curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
+        curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlSession, CURLOPT_VERBOSE, true);
+        curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curlSession, CURLOPT_SSLVERSION, 3);
+        curl_setopt($curlSession, CURLOPT_CAINFO, $serverCA);
+        curl_setopt($curlSession, CURLOPT_SSLCERT, $serverCert);
+        curl_setopt($curlSession, CURLOPT_SSLKEY, $serverKey);
+        
+        $jsonData = json_decode(curl_exec($curlSession));
+        curl_close($curlSession);
+
+        return $jsonData;
+    }
+
 }

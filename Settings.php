@@ -6,6 +6,7 @@ use Piwik\Settings\SystemSetting;
 
 class Settings extends \Piwik\Plugin\Settings
 {
+
     protected function init()
     {
         $this->govportServer = $this->createTextSetting('govportServer','Govport Server', 'Enter the Govport server endpoint to use to authorize users', 'http://localhost:3000/dn');
@@ -24,6 +25,7 @@ class Settings extends \Piwik\Plugin\Settings
 	    $setting->type = self::TYPE_STRING;
 	    $setting->description   = $description;
 	    $setting->defaultValue = $default;
+        $setting->readableByCurrentUser = true;
 
 	    return $setting;
     }
