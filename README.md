@@ -11,3 +11,16 @@ This plugin will add the following features to a piwik installation:
 
 
 ClientCertficates plugin will also require deployment of the ozone-enhancements branch of piwik to be able to tap into custom events needed for proper operation.
+
+## Installation
+
+* Clone plugin repo into `piwik/plugins/` directory 
+```
+cd piwik/plugins
+git clone <git-url> ClientCertificates
+```
+
+* Activate plugin by going to web interface, Settings --> Plugins, and then Activate the ClientCertificates plugin.
+* Go to Plugin Settings on left side, and set URL for authentication service, and the paths to server certificates. Remember to make sure the apache user has permission to read those files..
+
+Now clients of a Piwik enabled application should be enabled with client certificates.
