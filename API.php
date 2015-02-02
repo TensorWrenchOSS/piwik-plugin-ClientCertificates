@@ -115,7 +115,7 @@ class API extends \Piwik\Plugin\API
             $dn = implode(",",array_reverse(explode("/",ltrim($dn,"/"))));
         }
         $url = "$govportUrl/$dn";
-        error_log($url);
+        \Piwik\Log::debug("Connecting to url [".$url."]");
         $url =  str_replace (" " , "%20", $url);
         $curlSession = curl_init();
         curl_setopt($curlSession, CURLOPT_URL, $url);
