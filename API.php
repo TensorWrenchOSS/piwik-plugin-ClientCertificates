@@ -107,16 +107,37 @@ class API extends \Piwik\Plugin\API
         $settings = new \Piwik\Plugins\ClientCertificates\Settings();
 
         $govportUrl = $settings->govportServer->getValue();
+        $govportUserPath = $settings->govportUserPath->getValue();
+
+        $dn = $this->checkDnEncoding($dn);
+
+        $url = "$govportUrl$govportUserPath/$dn";
+        $url =  str_replace (" " , "%20", $url);
+
+        return $this->getJSON($url);
+    }
+
+    public function queryGovportGroup($dn, $group, $project) {
+        $settings = new Settings();
+
+        $govportUrl = $settings->govportServer->getValue();
+        $govportGroupPath = $settings->govportGroupPath->getValue();
+
+        $dn = $this->checkDnEncoding($dn);
+
+        $url = "$govportUrl$govportGroupPath/$project!$group/members/$dn";
+        $url =  str_replace (" " , "%20", $url);
+
+        return $this->getJSON($url);
+    }
+
+    private function getJSON($url) {
+        \Piwik\Log::debug("Connecting to url [".$url."]");
+        $settings = new Settings();
         $serverCert = $settings->serverCert->getValue();
         $serverKey = $settings->serverKey->getValue();
         $serverCA = $settings->serverCA->getValue();
 
-        if(preg_match("/^\/c=/i",$dn)){
-            $dn = implode(",",array_reverse(explode("/",ltrim($dn,"/"))));
-        }
-        $url = "$govportUrl/$dn";
-        \Piwik\Log::debug("Connecting to url [".$url."]");
-        $url =  str_replace (" " , "%20", $url);
         $curlSession = curl_init();
         curl_setopt($curlSession, CURLOPT_URL, $url);
         curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
@@ -124,15 +145,23 @@ class API extends \Piwik\Plugin\API
         curl_setopt($curlSession, CURLOPT_VERBOSE, true);
         curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curlSession, CURLOPT_SSLVERSION, 3);
         curl_setopt($curlSession, CURLOPT_CAINFO, $serverCA);
         curl_setopt($curlSession, CURLOPT_SSLCERT, $serverCert);
         curl_setopt($curlSession, CURLOPT_SSLKEY, $serverKey);
         
+
         $jsonData = json_decode(curl_exec($curlSession));
         curl_close($curlSession);
 
         return $jsonData;
+    }
+
+    private function checkDnEncoding($dn) {
+        if(preg_match("/^\/c=/i",$dn)){
+            return implode(",",array_reverse(explode("/",ltrim($dn,"/"))));
+        } else {
+            return $dn;
+        }
     }
 
 }
