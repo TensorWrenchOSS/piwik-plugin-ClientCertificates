@@ -70,12 +70,16 @@ class ClientCertificates extends \Piwik\Plugin {
 
     	$result = $clientCertificateAPI->queryGovport($dn);
 
-	 	$username = $result->{'uid'};
-	    $fullname = $result->{'fullName'};
-	    $email = $result->{'email'}; 
-	    $firstname = $result->{'firstName'};
-	    $lastname = $result->{'lastName'};
-	    $agency = $result->{'grantBy'}[0];
+	 	$username = $this->getProperty($result, 'uid');
+	    $fullname = $this->getProperty($result, 'fullName');
+	    $email = $this->getProperty($result,'email'); 
+	    $firstname = $this->getProperty($result,'firstName');
+	    $lastname = $this->getProperty($result,'lastName');
+	   
+        $agency = null;
+        if(property_exists($result, 'grantBy')) {
+            $agency = $result->{'grantBy'}[0];
+        }
 
 	    if($agency == null)
 	    {
@@ -104,5 +108,13 @@ class ClientCertificates extends \Piwik\Plugin {
     // Ensures uniqueness of user is determined only by visitor id and not system configuration
     public function getShouldMatchOneFieldOnly(&$shouldMatchOneFieldOnly) {
     	$shouldMatchOneFieldOnly = true;
+    }
+
+    private function getProperty($data, $property) {
+        if(property_exists($data, $property)) {
+            return $data->{$property};
+        } else {
+            return null;
+        }
     }
 }
