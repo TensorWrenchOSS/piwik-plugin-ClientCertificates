@@ -24,3 +24,17 @@ git clone <git-url> ClientCertificates
 * Go to Plugin Settings on left side, and set URL for authentication service, and the paths to server certificates. Remember to make sure the apache user has permission to read those files..
 
 Now clients of a Piwik enabled application should be enabled with client certificates.
+
+## Configuration
+
+* To enable new user support must add the following configuration to `config/config.ini.php`
+```
+[Tracker]
+window_look_back_for_visitor = 315360000
+```
+
+* To change the length of time that defines a visit you must add the following configuration to `config/config.ini.php`
+```
+[Tracker]
+visit_standard_length = <time-in-seconds>
+```

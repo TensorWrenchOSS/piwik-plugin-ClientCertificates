@@ -10,7 +10,7 @@ class Archiver extends \Piwik\Plugin\Archiver {
 	public function aggregateDayReport() {
 		$this->aggregateAgencyInformation();
 		$this->aggregateUserInformation();
-
+		$this->aggregateNewUserInformation();
     }
 
     private function aggregateAgencyInformation() {
@@ -20,6 +20,15 @@ class Archiver extends \Piwik\Plugin\Archiver {
 
 		$archiveProcessor = $this->getProcessor();
 		$archiveProcessor->insertBlobRecord('ClientCertificates_GetAgencyInformation', $dataTable->getSerialized(500));
+    }
+
+    private function aggregateNewUserInformation() {
+    	$logAggregator = $this->getLogAggregator();
+
+    	$dataTable = $logAggregator->getMetricsFromVisitByDimension('log_visit.visitor_returning')->asDataTable();
+
+    	$archiveProcessor = $this->getProcessor();
+    	$archiveProcessor->insertBlobRecord('ClientCertificates_GetNewUsers', $dataTable->getSerialized(500));
     }
 
     private function aggregateUserInformation() {
@@ -59,6 +68,7 @@ class Archiver extends \Piwik\Plugin\Archiver {
     	
     	$archiveProcessor = $this->getProcessor();
     	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetAgencyInformation', 500);
+    	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetNewUsers', 500);
     	$archiveProcessor->aggregateDataTableRecords('ClientCertificates_GetUserInformation', 500, null, null, $columnsAggregationOperation);
     }
 }

@@ -4,7 +4,7 @@
     "description": "This plugin will enable user identification through client certificates",
     "theme": false,
     "require": {
-        "piwik": ">=2.8.0"
+        "piwik": ">=2.8.1"
     },
     "authors": [
         {

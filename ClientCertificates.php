@@ -37,7 +37,8 @@ class ClientCertificates extends \Piwik\Plugin {
             ],[
                 {"uniqueId":"widgetEventsgetCategorysecondaryDimensioneventAction","parameters":{"module":"Events","action":"getCategory","secondaryDimension":"eventAction","widget":1},"isHidden":false},
                 {"uniqueId":"widgetClientCertificatesgetAgencyInformation","parameters":{"module":"ClientCertificates","action":"getAgencyInformation","widget":1},"isHidden":false},
-                {"uniqueId":"widgetClientCertificatesgetUserInformation","parameters":{"module":"ClientCertificates","action":"getUserInformation","widget":1},"isHidden":false}
+                {"uniqueId":"widgetClientCertificatesgetUserInformation","parameters":{"module":"ClientCertificates","action":"getUserInformation","widget":1},"isHidden":false},
+                {"uniqueId":"widgetClientCertificatesgetNewUsers","parameters":{"module":"ClientCertificates","action":"getNewUsers","widget":1},"isHidden":false}
             ],[
                 {"uniqueId":"widgetActionsgetSiteSearchKeywords","parameters":{"module":"Actions","action":"getSiteSearchKeywords","widget":1},"isHidden":false},
                 {"uniqueId":"widgetActionsgetSiteSearchNoResultKeywords","parameters":{"module":"Actions","action":"getSiteSearchNoResultKeywords","widget":1},"isHidden":false},

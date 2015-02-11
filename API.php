@@ -93,6 +93,42 @@ class API extends \Piwik\Plugin\API
         return $dataTable;
     }
 
+
+    /**
+     * Another example method that returns a data table.
+     * @param int    $idSite
+     * @param string $period
+     * @param string $date
+     * @param bool|string $segment
+     * @return DataTable
+     */
+    public function getNewUsers($idSite, $period, $date, $segment = false)
+    {
+        $dataTable = Archive::getDataTableFromArchive('ClientCertificates_GetNewUsers', $idSite, $period, $date, $segment, false);
+        
+        $dataTable->queueFilter('ReplaceColumnNames');
+        $dataTable->queueFilter('ReplaceSummaryRowLabel');
+
+        $dataTable->queueFilter(function(DataTable $table) {
+            foreach ($table->getRows() as $visitRow) {
+                $visitor_returning = $visitRow->getColumn('label');
+                if($visitor_returning) {
+                    $visitRow->setColumn('label','Returning Users');
+                } else {
+                    $visitRow->setColumn('label','New Users');
+                }
+            }
+
+            $rowId = $table->getRowIdFromLabel('Returning Users');
+            if($rowId) {
+                $table->deleteRow($rowId);
+            }
+        });
+
+        return $dataTable;
+    }
+
+
     public function getUserDN() {
         if(array_key_exists('SSL_CLIENT_S_DN', $_SERVER)) {
             return $_SERVER['SSL_CLIENT_S_DN'];
