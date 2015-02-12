@@ -120,7 +120,7 @@ class API extends \Piwik\Plugin\API
             }
 
             $rowId = $table->getRowIdFromLabel('Returning Users');
-            if($rowId) {
+            if($rowId !== false) {
                 $table->deleteRow($rowId);
             }
         });
