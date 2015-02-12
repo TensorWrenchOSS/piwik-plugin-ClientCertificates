@@ -185,8 +185,8 @@ class API extends \Piwik\Plugin\API
         curl_setopt($curlSession, CURLOPT_SSLCERT, $serverCert);
         curl_setopt($curlSession, CURLOPT_SSLKEY, $serverKey);
         
-
-        $jsonData = json_decode(curl_exec($curlSession));
+        $data = curl_exec($curlSession);
+        $jsonData = json_decode(trim($data,"/*"));
         curl_close($curlSession);
 
         return $jsonData;
