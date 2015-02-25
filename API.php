@@ -49,7 +49,8 @@ class API extends \Piwik\Plugin\API
 
                 $data = $visitsSummary->getUniqueVisitors($idSite, $period, $date, $newSegment);
                 $data->queueFilter( function(DataTable $uniqueTable) use ($visitRow, $agency) {
-                    $uniqueVisitors = $uniqueTable->getRows()[0]->getColumn('nb_uniq_visitors');
+                    $rows = $uniqueTable->getRows();
+                    $uniqueVisitors = $rows[0]->getColumn('nb_uniq_visitors');
 
                     $visitRow->setColumn(\Piwik\Metrics::INDEX_NB_USERS, $uniqueVisitors);
                 });
@@ -184,6 +185,7 @@ class API extends \Piwik\Plugin\API
         curl_setopt($curlSession, CURLOPT_CAINFO, $serverCA);
         curl_setopt($curlSession, CURLOPT_SSLCERT, $serverCert);
         curl_setopt($curlSession, CURLOPT_SSLKEY, $serverKey);
+        curl_setopt($curlSession, CURLOPT_SSL_VERSION, 4);
         
         $data = curl_exec($curlSession);
         $jsonData = json_decode(trim($data,"/*"));
