@@ -90,6 +90,8 @@ class ClientCertificates extends \Piwik\Plugin {
 	    	}
 	    }
 
+        \Piwik\Log::debug("ClientCert Tracker Response: $username - $fullname - $email - $firstname - $lastname - $agency");
+
         $visitorInfo['user_dn'] = $dn;
         $visitorInfo['user_id'] = $username;
         $visitorInfo['uid'] = $username;
