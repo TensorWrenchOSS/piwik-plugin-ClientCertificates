@@ -103,7 +103,7 @@ class ClientCertificates extends \Piwik\Plugin {
     public function getVisitorId(&$idVisitor) {
         $dn = API::getInstance()->getUserDN();
 
-        $idVisitor = hex2bin(substr( sha1( $dn ), 0, 16));
+        $idVisitor = $this->hextobin(substr( sha1( $dn ), 0, 16));
     }
 
     // Ensures uniqueness of user is determined only by visitor id and not system configuration
@@ -118,4 +118,19 @@ class ClientCertificates extends \Piwik\Plugin {
             return null;
         }
     }
+
+    private function hextobin($hexstr) { 
+        $n = strlen($hexstr); 
+        $sbin="";   
+        $i=0; 
+        while($i<$n) 
+        {       
+            $a =substr($hexstr,$i,2);           
+            $c = pack("H*",$a); 
+            if ($i==0){$sbin=$c;} 
+            else {$sbin.=$c;} 
+            $i+=2; 
+        } 
+        return $sbin; 
+    }  
 }
