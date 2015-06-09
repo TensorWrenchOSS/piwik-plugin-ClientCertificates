@@ -90,7 +90,7 @@ class ClientCertificates extends \Piwik\Plugin {
 	    	}
 	    }
 
-        \Piwik\Log::debug("ClientCert Tracker Response: $username - $fullname - $email - $firstname - $lastname - $agency");
+        \Piwik\Log::info("ClientCert Tracker Response: $username - $fullname - $email - $firstname - $lastname - $agency");
 
         $visitorInfo['user_dn'] = $dn;
         $visitorInfo['user_id'] = $username;
@@ -98,7 +98,7 @@ class ClientCertificates extends \Piwik\Plugin {
         $visitorInfo['first_name'] = ucwords(strtolower($firstname));
         $visitorInfo['last_name'] = ucwords(strtolower($lastname));
         $visitorInfo['email'] = $email;
-        $visitorInfo['agency'] = $agency;
+        $visitorInfo['agency'] = strtoupper($agency);
     }
 
     // Sets visitor user_id to be hash of user DN in the database
