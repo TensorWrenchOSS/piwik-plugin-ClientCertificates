@@ -13,6 +13,8 @@ use Piwik\DataTable;
 use Piwik\Segment;
 use Piwik\DataTable\Row;
 use Piwik\Plugins\VisitsSummary\API as VisitsSummaryAPI;
+use Piwik\Container\StaticContainer;
+
 
 /**
  * API for plugin ClientCertificates
@@ -169,7 +171,9 @@ class API extends \Piwik\Plugin\API
     }
 
     private function getJSON($url) {
-        \Piwik\Log::debug("Connecting to url [".$url."]");
+        $logger = StaticContainer::get('Psr\Log\LoggerInterface');
+
+        $logger->info("Connecting to url [".$url."]");
         $settings = new Settings();
         $serverCert = $settings->serverCert->getValue();
         $serverKey = $settings->serverKey->getValue();
@@ -188,7 +192,11 @@ class API extends \Piwik\Plugin\API
         curl_setopt($curlSession, CURLOPT_SSLVERSION, 4);
         
         $data = curl_exec($curlSession);
+        $logger->debug("Govport Response = ".$data);
         $jsonData = json_decode(trim($data,"/*"));
+        if($jsonData == null) {
+            $logger->warn("Received invalid response from govport [".$data."]");
+        }
         curl_close($curlSession);
 
         return $jsonData;

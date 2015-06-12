@@ -9,6 +9,7 @@
 namespace Piwik\Plugins\ClientCertificates;
 
 use Piwik\Plugins\ClientCertificates\API;
+use Piwik\Container\StaticContainer;
 
 /**
  */
@@ -66,6 +67,8 @@ class ClientCertificates extends \Piwik\Plugin {
 
     // Puts new visitor data from govport into database 
     public function newVisitorInformation(&$visitorInfo, $request) {
+        $logger = StaticContainer::get('Psr\Log\LoggerInterface');
+
         $clientCertificateAPI = API::getInstance();
     	$dn = $clientCertificateAPI->getUserDN();
 
@@ -90,7 +93,7 @@ class ClientCertificates extends \Piwik\Plugin {
 	    	}
 	    }
 
-        \Piwik\Log::info("ClientCert Tracker Response: $username - $fullname - $email - $firstname - $lastname - $agency");
+        $logger->info("ClientCert Tracker: $username - $fullname - $email - $firstname - $lastname - $agency");
 
         $visitorInfo['user_dn'] = $dn;
         $visitorInfo['user_id'] = $username;
