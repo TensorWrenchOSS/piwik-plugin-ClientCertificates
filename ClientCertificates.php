@@ -80,18 +80,20 @@ class ClientCertificates extends \Piwik\Plugin {
 	    $firstname = $this->getProperty($result,'firstName');
 	    $lastname = $this->getProperty($result,'lastName');
 	   
-        $agency = null;
-        if(property_exists($result, 'grantBy')) {
-            $agency = $result->{'grantBy'}[0];
-        }
+        $agency = $this->getProperty($result,'dutyorg');
+        if($agency == null) {
+            if(property_exists($result, 'grantBy')) {
+                $agency = $result->{'grantBy'}[0];
+            }
 
-	    if($agency == null)
-	    {
-	    	$agency = $result->{'organizations'}[0];
-	    	if($agency == null) {
-	    		$agency = 'N/A';
-	    	}
-	    }
+            if($agency == null)
+            {
+                $agency = $result->{'organizations'}[0];
+                if($agency == null) {
+                    $agency = 'N/A';
+                }
+            }
+        }
 
         $logger->info("ClientCert Tracker: $username - $fullname - $email - $firstname - $lastname - $agency");
 
@@ -117,6 +119,8 @@ class ClientCertificates extends \Piwik\Plugin {
     }
 
     private function getProperty($data, $property) {
+        $logger = StaticContainer::get('Psr\Log\LoggerInterface');
+
         if(property_exists($data, $property)) {
             return $data->{$property};
         } else {
