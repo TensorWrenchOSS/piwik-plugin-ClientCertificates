@@ -25,7 +25,8 @@ class ClientCertificates extends \Piwik\Plugin {
             'Tracker.getVisitorId' => 'getVisitorId',
             'Tracker.getShouldMatchOneFieldOnly' => 'getShouldMatchOneFieldOnly',
             'Live.getAllVisitorDetails' => 'getAllVisitorDetails',
-            'Dashboard.changeDefaultDashboardLayout' => 'changeDefaultDashboardLayout'
+            'Dashboard.changeDefaultDashboardLayout' => 'changeDefaultDashboardLayout',
+            'DataTable.checkRowLabelOnAggregate' => 'checkRowLabelOnAggregate'
         );
     }
 
@@ -116,6 +117,16 @@ class ClientCertificates extends \Piwik\Plugin {
     // Ensures uniqueness of user is determined only by visitor id and not system configuration
     public function getShouldMatchOneFieldOnly(&$shouldMatchOneFieldOnly) {
     	$shouldMatchOneFieldOnly = true;
+    }
+
+    public function checkRowLabelOnAggregate(&$row) {
+        $labelToLookFor = $row->getColumn('label');
+        if ($labelToLookFor === false) {
+            $id = $row->getColumn('log_inner.user_id');
+            if($id !== false) {
+                $row->setColumn('label',$id);
+            }
+        }
     }
 
     private function getProperty($data, $property) {
