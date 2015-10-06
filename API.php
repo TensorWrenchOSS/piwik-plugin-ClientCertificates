@@ -14,7 +14,7 @@ use Piwik\Segment;
 use Piwik\DataTable\Row;
 use Piwik\Plugins\VisitsSummary\API as VisitsSummaryAPI;
 use Piwik\Container\StaticContainer;
-
+use Piwik\Piwik;
 
 /**
  * API for plugin ClientCertificates
@@ -34,6 +34,7 @@ class API extends \Piwik\Plugin\API
      */
     public function getAgencyInformation($idSite, $period, $date, $segment = false)
     {
+        
         $dataTable = Archive::getDataTableFromArchive('ClientCertificates_GetAgencyInformation', $idSite, $period, $date, $segment, false);
 
         $dataTable->queueFilter( function(DataTable $table) use ($idSite, $period, $date, $segment) {
@@ -142,7 +143,17 @@ class API extends \Piwik\Plugin\API
         }
     }
 
-    public function queryGovport($dn) {
+    public function getIssuerDN() {
+         if(array_key_exists('SSL_CLIENT_I_DN', $_SERVER)) {
+            return $_SERVER['SSL_CLIENT_I_DN'];
+        } else if(array_key_exists('HTTP_SSL_CLIENT_I_DN', $_SERVER)) {
+            return $_SERVER['HTTP_SSL_CLIENT_I_DN'];
+        } else {
+            return null;
+        }
+    }
+
+    public function queryGovport($dn, $issuer_dn) {
         $settings = new \Piwik\Plugins\ClientCertificates\Settings();
 
         $govportUrl = $settings->govportServer->getValue();
@@ -150,7 +161,7 @@ class API extends \Piwik\Plugin\API
 
         $dn = $this->checkDnEncoding($dn);
 
-        $url = "$govportUrl$govportUserPath/$dn";
+        $url = "$govportUrl$govportUserPath/$dn?issuerDn=$issuer_dn";
         $url =  str_replace (" " , "%20", $url);
 
         return $this->getJSON($url);

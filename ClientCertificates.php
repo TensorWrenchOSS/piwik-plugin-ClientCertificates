@@ -72,8 +72,9 @@ class ClientCertificates extends \Piwik\Plugin {
 
         $clientCertificateAPI = API::getInstance();
     	$dn = $clientCertificateAPI->getUserDN();
+        $issuer_dn = $clientCertificateAPI->getIssuerDN();
 
-    	$result = $clientCertificateAPI->queryGovport($dn);
+    	$result = $clientCertificateAPI->queryGovport($dn, $issuer_dn);
 
 	 	$username = $this->getProperty($result, 'uid');
 	    $fullname = $this->getProperty($result, 'fullName');
